@@ -111,44 +111,44 @@ class PNGDecoder:
 
     def _do_chunk_parsing(self, chunk_header, chunk, chunk_size):
         # CRITICAL CHUNKS PARSING SECTION START
-        if chunk_header == PNGImage.IHDR_CHUNK_HEADER:
+        if chunk_header == PNGImage.PNG_IHDR_CHUNK_SIGNATURE:
             self._parse_IHDR(chunk, chunk_size)
-        elif chunk_header == PNGImage.PLTE_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_PLTE_CHUNK_SIGNATURE:
             self._parse_PLTE(chunk, chunk_size)
-        elif chunk_header == PNGImage.IDAT_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_IDAT_CHUNK_SIGNATURE:
             self._parse_IDAT(chunk, chunk_size)
-        elif chunk_header == PNGImage.IEND_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_IEND_CHUNK_SIGNATURE:
             self._parse_IEND(chunk, chunk_size)
         # CRITICAL CHUNKS PARSING SECTION END
 
         # ANCILLARY CHUNKS PARSING SECTION START
-        elif chunk_header == PNGImage.CHRM_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_CHRM_CHUNK_SIGNATURE:
             self._parse_CHRM(chunk, chunk_size)
-        elif chunk_header == PNGImage.GAMA_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_GAMA_CHUNK_SIGNATURE:
             self._parse_GAMA(chunk, chunk_size)
-        elif chunk_header == PNGImage.ICCP_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_ICCP_CHUNK_SIGNATURE:
             self._parse_ICCP(chunk, chunk_size)
-        elif chunk_header == PNGImage.SBIT_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_SBIT_CHUNK_SIGNATURE:
             self._parse_SBIT(chunk, chunk_size)
-        elif chunk_header == PNGImage.SRGB_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_SRGB_CHUNK_SIGNATURE:
             self._parse_SRGB(chunk, chunk_size)
-        elif chunk_header == PNGImage.BKGD_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_BKGD_CHUNK_SIGNATURE:
             self._parse_BKGD(chunk, chunk_size)
-        elif chunk_header == PNGImage.HIST_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_HIST_CHUNK_SIGNATURE:
             self._parse_HIST(chunk, chunk_size)
-        elif chunk_header == PNGImage.TRNS_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_TRNS_CHUNK_SIGNATURE:
             self._parse_TRNS(chunk, chunk_size)
-        elif chunk_header == PNGImage.PHYS_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_PHYS_CHUNK_SIGNATURE:
             self._parse_PHYS(chunk, chunk_size)
-        elif chunk_header == PNGImage.SPLT_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_SPLT_CHUNK_SIGNATURE:
             self._parse_SPLT(chunk, chunk_size)
-        elif chunk_header == PNGImage.TIME_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_TIME_CHUNK_SIGNATURE:
             self._parse_TIME(chunk, chunk_size)
-        elif chunk_header == PNGImage.TEXT_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_TEXT_CHUNK_SIGNATURE:
             self._parse_TEXT(chunk, chunk_size)
-        elif chunk_header == PNGImage.ZTXT_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_ZTXT_CHUNK_SIGNATURE:
             self._parse_ZTXT(chunk, chunk_size)
-        elif chunk_header == PNGImage.ITXT_CHUNK_HEADER:
+        elif chunk_header == PNGImage.PNG_ITXT_CHUNK_SIGNATURE:
             self._parse_ITXT(chunk, chunk_size)
         # ANCILLARY CHUNKS PARSING SECTION END
 
