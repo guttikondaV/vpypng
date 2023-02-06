@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vpypng"
+version = "1.0.0"
+description = "A Python library for reading and writing PNG files with no dependencies."
+readme = "README.md"
+readme_content_type = "text/markdown"
+license = "MIT"
+requires-python = ">=3.6"
+keywords = ["png", "image", "graphics"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+authors = [
+    {name= "Varun Guttikonda", email= "guttikonda.v@northeastern.edu"}]
+license_files = ["LICENSE"]
