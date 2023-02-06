@@ -26,3 +26,6 @@ classifiers = [
 authors = [
     {name= "Varun Guttikonda", email= "guttikonda.v@northeastern.edu"}]
 license_files = ["LICENSE"]
+
+[project.optional-dependencies]
+tests = ["pytest","pypng"]
