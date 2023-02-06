@@ -1,4 +1,4 @@
-from io import BufferedIOBase
+from io import BufferedIOBase,BytesIO
 from struct import unpack
 
 from .crc import check_crc_is_same
@@ -107,7 +107,7 @@ class PNGDecoder:
             raise PNGDecodeException
 
         chunk_header = [int(x) for x in chunk_header]
-        return chunk_header, chunk, chunk_size
+        return chunk_header, BytesIO(chunk), chunk_size
 
     def _do_chunk_parsing(self, chunk_header, chunk, chunk_size):
         # CRITICAL CHUNKS PARSING SECTION START
