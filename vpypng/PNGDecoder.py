@@ -1,4 +1,4 @@
-from io import BufferedIOBase,BytesIO
+from io import BufferedIOBase, BytesIO
 from struct import unpack
 
 from .crc import check_crc_is_same
@@ -28,60 +28,96 @@ class PNGDecoder:
 
     # CRITICAL CHUNKS PARSING SECTION START
     def _parse_IHDR(self, chunk, chunk_size):
-        pass
+        print("Found IHDR chunk")  # Remove after defining all chunks
+        width = unpack(">I", chunk.read(4))[0]
+        height = unpack(">I", chunk.read(4))[0]
+        bit_depth = self._parse_int_from_byte(chunk.read(1))
+        color_type = self._parse_int_from_byte(chunk.read(1))
+        compression_method = self._parse_int_from_byte(chunk.read(1))
+        filter_method = self._parse_int_from_byte(chunk.read(1))
+        interlace_method = self._parse_int_from_byte(chunk.read(1))
+
+        self.image.set_items_from_map(
+            {
+                "width": width,
+                "height": height,
+                "bit_depth": bit_depth,
+                "color_type": color_type,
+                "compression_method": compression_method,
+                "filter_method": filter_method,
+                "interlace_method": interlace_method,
+            }
+        )
 
     def _parse_PLTE(self, chunk, chunk_size):
+        print("Found PLTE chunk")  # Remove after defining all chunks
         pass
 
     def _parse_IDAT(self, chunk, chunk_size):
+        print("Found IDAT chunk")  # Remove after defining all chunks
         pass
 
     def _parse_IEND(self, chunk, chunk_size):
-        pass
+        print("Found IEND chunk")  # Remove after defining all chunks
+        self.keep_decoding = False
 
     # CRITICAL CHUNKS PARSING SECTION END
 
     # ANCILLARY CHUNKS PARSING SECTION START
     def _parse_CHRM(self, chunk, chunk_size):
+        print("Found CHRM chunk")  # Remove after defining all chunks
         pass
 
     def _parse_GAMA(self, chunk, chunk_size):
+        print("Found GAMA chunk")  # Remove after defining all chunks
         pass
 
     def _parse_ICCP(self, chunk, chunk_size):
+        print("Found ICCP chunk")  # Remove after defining all chunks
         pass
 
     def _parse_SBIT(self, chunk, chunk_size):
+        print("Found SBIT chunk")  # Remove after defining all chunks
         pass
 
     def _parse_SRGB(self, chunk, chunk_size):
+        print("Found SRGB chunk")  # Remove after defining all chunks
         pass
 
     def _parse_BKGD(self, chunk, chunk_size):
+        print("Found BKGD chunk")  # Remove after defining all chunks
         pass
 
     def _parse_HIST(self, chunk, chunk_size):
+        print("Found HIST chunk")  # Remove after defining all chunks
         pass
 
     def _parse_TRNS(self, chunk, chunk_size):
+        print("Found TRNS chunk")  # Remove after defining all chunks
         pass
 
     def _parse_PHYS(self, chunk, chunk_size):
+        print("Found PHYS chunk")  # Remove after defining all chunks
         pass
 
     def _parse_SPLT(self, chunk, chunk_size):
+        print("Found SPLT chunk")  # Remove after defining all chunks
         pass
 
     def _parse_TIME(self, chunk, chunk_size):
+        print("Found TIME chunk")  # Remove after defining all chunks
         pass
 
     def _parse_TEXT(self, chunk, chunk_size):
+        print("Found TEXT chunk")  # Remove after defining all chunks
         pass
 
     def _parse_ZTXT(self, chunk, chunk_size):
+        print("Found ZTXT chunk")  # Remove after defining all chunks
         pass
 
     def _parse_ITXT(self, chunk, chunk_size):
+        print("Found ITXT chunk")  # Remove after defining all chunks
         pass
 
     # ANCILLARY CHUNKS PARSING SECTION END
@@ -151,6 +187,9 @@ class PNGDecoder:
         elif chunk_header == PNGImage.PNG_ITXT_CHUNK_SIGNATURE:
             self._parse_ITXT(chunk, chunk_size)
         # ANCILLARY CHUNKS PARSING SECTION END
+
+    def _parse_int_from_byte(self, bytes):
+        return int.from_bytes(bytes, byteorder="big")
 
     # HELPER CHUNKS SECTION END
 
