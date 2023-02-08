@@ -140,3 +140,63 @@ class TestPngDecoder:
                     decoded_image.interlace_method
                     == standard_decoded_image[-1]["interlace"]
                 )
+
+    def test_decoder_time_ok_input_str(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_time*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(good_image_path)
+
+            assert decoded_image['last_modified'] is not None
+
+    def test_decoder_time_ok_input_path(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_time*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(Path(good_image_path))
+
+            assert decoded_image['last_modified'] is not None
+
+    def test_decoder_time_ok_input_file(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_time*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            with open(good_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile)
+
+                assert decoded_image['last_modified'] is not None
+
+    def test_decoder_time_ok_input_bytes(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_time*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            with open(good_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile.read())
+
+                assert decoded_image['last_modified'] is not None
+
+    def test_decoder_time_bad_input_str(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_time*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(bad_image_path)
+
+            assert decoded_image['last_modified'] is None
+
+    def test_decoder_time_bad_input_path(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_time*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(Path(bad_image_path))
+
+            assert decoded_image['last_modified'] is None
+
+    def test_decoder_time_bad_input_file(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_time*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            with open(bad_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile)
+
+                assert decoded_image['last_modified'] is None
+
+    def test_decoder_time_bad_input_bytes(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_time*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            with open(bad_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile.read())
+
+                assert decoded_image["last_modified"] is None

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from io import BufferedIOBase, BytesIO
 from struct import unpack
 
@@ -106,7 +107,25 @@ class PNGDecoder:
 
     def _parse_TIME(self, chunk, chunk_size):
         print("Found TIME chunk")  # Remove after defining all chunks
-        pass
+        try:
+
+            year = self._parse_int_from_byte(chunk.read(2))
+            month = self._parse_int_from_byte(chunk.read(1))
+            day = self._parse_int_from_byte(chunk.read(1))
+            hour = self._parse_int_from_byte(chunk.read(1))
+            minute = self._parse_int_from_byte(chunk.read(1))
+            second = self._parse_int_from_byte(chunk.read(1))
+
+            if second >= 60:
+                second = 59
+
+            date_of_last_modification = datetime(
+                year, month, day, hour, minute, second, tzinfo=timezone.utc
+            )
+
+            self.image['last_modified'] = date_of_last_modification
+        except Exception as e:
+            return
 
     def _parse_TEXT(self, chunk, chunk_size):
         print("Found TEXT chunk")  # Remove after defining all chunks
