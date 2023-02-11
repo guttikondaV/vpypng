@@ -3,6 +3,7 @@ from io import BufferedIOBase, BytesIO
 from struct import unpack
 
 from .crc import check_crc_is_same
+from .deflate import deflate
 from .exceptions import PNGDecodeException
 from .PNGImage import PNGImage
 
@@ -144,7 +145,7 @@ class PNGDecoder:
                 "comment",
             ]
         ] + ["XML:com.adobe.xmp"]
-        
+
         try:
             parsed_bytes, null_is_found = 0, False
             key_word, value = "", ""
@@ -183,7 +184,92 @@ class PNGDecoder:
 
     def _parse_ITXT(self, chunk, chunk_size):
         print("Found ITXT chunk")  # Remove after defining all chunks
-        pass
+
+        ALLOWED_KEYWORDS = [
+            keyword.title()
+            for keyword in [
+                "title",
+                "author",
+                "description",
+                "copyright",
+                "creation time",
+                "software",
+                "disclaimer",
+                "warning",
+                "source",
+                "comment",
+            ]
+        ] + ["XML:com.adobe.xmp"]
+
+        try:
+            keyword, null_seperator_is_found, parsed_bytes = "", False, 0
+
+            while not null_seperator_is_found and parsed_bytes < chunk_size:
+                character = self._parse_int_from_byte(chunk.read(1))
+                if character == 0:
+                    parsed_bytes += 1
+                    break
+                keyword += chr(character)
+
+                parsed_bytes += 1
+
+            compression_flag = self._parse_int_from_byte(chunk.read(1))
+            parsed_bytes += 1
+
+            compression_method = self._parse_int_from_byte(chunk.read(1))
+            parsed_bytes += 1
+
+            null_seperator_is_found = False
+            language_tag = ""
+
+            while not null_seperator_is_found and parsed_bytes < chunk_size:
+                character = self._parse_int_from_byte(chunk.read(1))
+                if character == 0:
+                    parsed_bytes += 1
+                    break
+                language_tag += chr(character)
+
+                parsed_bytes += 1
+
+            null_seperator_is_found = False
+            translated_keyword = bytearray()
+
+            while not null_seperator_is_found and parsed_bytes < chunk_size:
+                character = self._parse_int_from_byte(chunk.read(1))
+                if character == 0:
+                    parsed_bytes += 1
+                    break
+                translated_keyword.append(character)
+
+                parsed_bytes += 1
+
+            translated_keyword = translated_keyword.decode("utf-8")
+            text_data = chunk.read(chunk_size - parsed_bytes)
+
+            text_data = (
+                text_data.decode("utf-8")
+                if compression_flag == 0
+                else deflate(text_data).decode("utf-8")
+            )
+
+            if keyword not in ALLOWED_KEYWORDS:
+                return
+
+            itxt_info_object = {
+                "keyword": keyword,
+                "translated_keyword": translated_keyword,
+                "compression_flag": compression_flag,
+                "language_tag": language_tag,
+                "text_data": text_data,
+            }
+
+            if self.image["itxt_data"] is None:
+                self.image["itxt_data"] = []
+                self.image["itxt_data"].append(itxt_info_object)
+            else:
+                self.image["itxt_data"].append(itxt_info_object)
+        except Exception as e:
+            return
 
     # ANCILLARY CHUNKS PARSING SECTION END
 
