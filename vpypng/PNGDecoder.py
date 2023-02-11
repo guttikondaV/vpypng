@@ -100,7 +100,24 @@ class PNGDecoder:
 
     def _parse_PHYS(self, chunk, chunk_size):
         print("Found PHYS chunk")  # Remove after defining all chunks
-        pass
+
+        try:
+            x_pixels_per_unit = unpack(">I", chunk.read(4))[0]
+            y_pixels_per_unit = unpack(">I", chunk.read(4))[0]
+            unit_specifier = self._parse_int_from_byte(chunk.read(1))
+
+            phys_matrix = {
+                "x": x_pixels_per_unit,
+                "y": y_pixels_per_unit,
+                "unit_spec": unit_specifier,
+            }
+
+            phys_matrix["unit"] = "meters" if unit_specifier == 1 else "aspect_ratio"
+
+            self.image["phys"] = phys_matrix
+
+        except Exception as e:
+            pass
 
     def _parse_SPLT(self, chunk, chunk_size):
         print("Found SPLT chunk")  # Remove after defining all chunks
@@ -180,7 +197,7 @@ class PNGDecoder:
 
     def _parse_ZTXT(self, chunk, chunk_size):
         print("Found ZTXT chunk")  # Remove after defining all chunks
-        
+
         ALLOWED_KEYWORDS = [
             keyword.title()
             for keyword in [
@@ -223,7 +240,6 @@ class PNGDecoder:
                 self.image["ztxt_data"][keyword] = text_data
             else:
                 self.image["ztxt_data"][keyword] = text_data
-
 
         except Exception as e:
             return
