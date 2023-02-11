@@ -68,12 +68,36 @@ class PNGDecoder:
     # ANCILLARY CHUNKS PARSING SECTION START
     def _parse_CHRM(self, chunk, chunk_size):
         print("Found CHRM chunk")  # Remove after defining all chunks
-        pass
+
+        if self.image["idat"] is not None or self.image["palette"] is not None:
+            raise PNGDecodeException("CHRM chunk must be before IDAT and PLTE chunks")
+
+        if chunk_size != 32:  # 8 bytes for each of the 4 points
+            return
+
+        try:
+            white_point_x, white_point_y = unpack(">II", chunk.read(8))
+            red_x, red_y = unpack(">II", chunk.read(8))
+            green_x, green_y = unpack(">II", chunk.read(8))
+            blue_x, blue_y = unpack(">II", chunk.read(8))
+
+            self.image["chrm"] = (
+                white_point_x / 100000,
+                white_point_y / 100000,
+                red_x / 100000,
+                red_y / 100000,
+                green_x / 100000,
+                green_y / 100000,
+                blue_x / 100000,
+                blue_y / 100000,
+            )
+        except Exception as e:
+            pass
 
     def _parse_GAMA(self, chunk, chunk_size):
         print("Found GAMA chunk")  # Remove after defining all chunks
 
-        if self.image['idat'] is not None or self.image['palette'] is not None:
+        if self.image["idat"] is not None or self.image["palette"] is not None:
             raise PNGDecodeException("GAMA chunk must be before IDAT and PLTE chunks")
 
         try:
