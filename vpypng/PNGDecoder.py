@@ -123,13 +123,59 @@ class PNGDecoder:
                 year, month, day, hour, minute, second, tzinfo=timezone.utc
             )
 
-            self.image['last_modified'] = date_of_last_modification
+            self.image["last_modified"] = date_of_last_modification
         except Exception as e:
             return
 
     def _parse_TEXT(self, chunk, chunk_size):
         print("Found TEXT chunk")  # Remove after defining all chunks
-        pass
+        ALLOWED_KEYWORDS = [
+            keyword.title()
+            for keyword in [
+                "title",
+                "author",
+                "description",
+                "copyright",
+                "creation time",
+                "software",
+                "disclaimer",
+                "warning",
+                "source",
+                "comment",
+            ]
+        ] + ["XML:com.adobe.xmp"]
+        
+        try:
+            parsed_bytes, null_is_found = 0, False
+            key_word, value = "", ""
+
+            while not null_is_found and parsed_bytes < chunk_size:
+                character = self._parse_int_from_byte(chunk.read(1))
+                if character == 0:
+                    parsed_bytes += 1
+                    break
+                key_word += chr(character)
+
+                parsed_bytes += 1
+
+            if key_word not in ALLOWED_KEYWORDS:
+                return
+
+            remaining_bytes = chunk_size - parsed_bytes
+
+            for i in range(remaining_bytes):
+                character = self._parse_int_from_byte(chunk.read(1))
+                value += chr(character)
+
+            if self.image["text_data"] is None:
+                self.image["text_data"] = {}
+                self.image["text_data"][key_word] = value
+
+            else:
+                self.image["text_data"][key_word] = value
+        except Exception as e:
+            print(e.args)
+            return
 
     def _parse_ZTXT(self, chunk, chunk_size):
         print("Found ZTXT chunk")  # Remove after defining all chunks
