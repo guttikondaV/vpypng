@@ -72,7 +72,15 @@ class PNGDecoder:
 
     def _parse_GAMA(self, chunk, chunk_size):
         print("Found GAMA chunk")  # Remove after defining all chunks
-        pass
+
+        if self.image['idat'] is not None or self.image['palette'] is not None:
+            raise PNGDecodeException("GAMA chunk must be before IDAT and PLTE chunks")
+
+        try:
+            gamma = unpack(">I", chunk.read(4))[0]
+            self.image["gama"] = gamma / 100000
+        except Exception as e:
+            pass
 
     def _parse_ICCP(self, chunk, chunk_size):
         print("Found ICCP chunk")  # Remove after defining all chunks
