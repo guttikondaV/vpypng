@@ -180,7 +180,53 @@ class PNGDecoder:
 
     def _parse_ZTXT(self, chunk, chunk_size):
         print("Found ZTXT chunk")  # Remove after defining all chunks
-        pass
+        
+        ALLOWED_KEYWORDS = [
+            keyword.title()
+            for keyword in [
+                "title",
+                "author",
+                "description",
+                "copyright",
+                "creation time",
+                "software",
+                "disclaimer",
+                "warning",
+                "source",
+                "comment",
+            ]
+        ] + ["XML:com.adobe.xmp"]
+
+        try:
+            keyword, null_seperator_is_found, parsed_bytes = "", False, 0
+
+            while not null_seperator_is_found and parsed_bytes < chunk_size:
+                character = self._parse_int_from_byte(chunk.read(1))
+                if character == 0:
+                    parsed_bytes += 1
+                    break
+                keyword += chr(character)
+
+                parsed_bytes += 1
+
+            if keyword not in ALLOWED_KEYWORDS:
+                return
+
+            compression_method = self._parse_int_from_byte(chunk.read(1))
+            parsed_bytes += 1
+
+            text_data = deflate(chunk.read(chunk_size - parsed_bytes))
+            text_data = text_data.decode("latin1")
+
+            if self.image["ztxt_data"] is None:
+                self.image["ztxt_data"] = {}
+                self.image["ztxt_data"][keyword] = text_data
+            else:
+                self.image["ztxt_data"][keyword] = text_data
+
+
+        except Exception as e:
+            return
 
     def _parse_ITXT(self, chunk, chunk_size):
         print("Found ITXT chunk")  # Remove after defining all chunks
