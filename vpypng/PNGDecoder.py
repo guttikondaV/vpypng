@@ -184,9 +184,6 @@ class PNGDecoder:
 
     def _parse_BKGD(self, chunk, chunk_size):
         print("Found BKGD chunk")  # Remove after defining all chunks
-        if self.image["plte"] is None:
-            raise PNGDecodeException("BKGD chunk must be after PLTE chunk")
-
         if self.image["idat"] is not None:
             raise PNGDecodeException("BKGD chunk must be before IDAT chunk")
         pass
@@ -194,17 +191,12 @@ class PNGDecoder:
     def _parse_HIST(self, chunk, chunk_size):
         print("Found HIST chunk")  # Remove after defining all chunks
 
-        if self.image["plte"] is None:
-            raise PNGDecodeException("HIST chunk must be after PLTE chunk")
-
         if self.image["idat"] is not None:
             raise PNGDecodeException("HIST chunk must be before IDAT chunk")
         pass
 
     def _parse_TRNS(self, chunk, chunk_size):
         print("Found TRNS chunk")  # Remove after defining all chunks
-        if self.image["plte"] is None:
-            raise PNGDecodeException("TRNS chunk must be after PLTE chunk")
 
         if self.image["idat"] is not None:
             raise PNGDecodeException("TRNS chunk must be before IDAT chunk")
