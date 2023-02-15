@@ -53,7 +53,21 @@ class PNGDecoder:
 
     def _parse_PLTE(self, chunk, chunk_size):
         print("Found PLTE chunk")  # Remove after defining all chunks
-        pass
+        if self.image['idat'] is not None:
+            raise PNGDecodeException("PLTE chunk must be before IDAT chunk")
+        
+        if chunk_size % 3 != 0:
+            raise PNGDecodeException("PLTE chunk size must be divisible by 3")
+        
+        palette = []
+
+        for i in range(chunk_size // 3):
+            red=self._parse_int_from_byte(chunk.read(1))
+            green=self._parse_int_from_byte(chunk.read(1))
+            blue=self._parse_int_from_byte(chunk.read(1))
+            palette.append((red, green, blue))
+
+        self.image['palette'] = palette
 
     def _parse_IDAT(self, chunk, chunk_size):
         print("Found IDAT chunk")  # Remove after defining all chunks
