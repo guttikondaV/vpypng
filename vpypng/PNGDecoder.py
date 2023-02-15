@@ -168,6 +168,31 @@ class PNGDecoder:
 
         if self.image["idat"] is not None or self.image["palette"] is not None:
             raise PNGDecodeException("SBIT chunk must be before IDAT and PLTE chunks")
+
+        try:
+            if self.image["color_type"] == 0:
+                sbit = self._parse_int_from_byte(chunk.read(1))
+                if sbit == 0 or self.image["bit_depth"] < sbit:
+                    return
+
+                self.image["sbit"] = sbit
+            elif self.image["color_type"] in [2, 3]:
+                red = self._parse_int_from_byte(chunk.read(1))
+                green = self._parse_int_from_byte(chunk.read(1))
+                blue = self._parse_int_from_byte(chunk.read(1))
+                self.image["sbit"] = (red, green, blue)
+            elif self.image["color_type"] == 4:
+                greyscale = self._parse_int_from_byte(chunk.read(1))
+                alpha = self._parse_int_from_byte(chunk.read(1))
+                self.image["sbit"] = (greyscale, alpha)
+            elif self.image["color_type"] == 6:
+                red = self._parse_int_from_byte(chunk.read(1))
+                green = self._parse_int_from_byte(chunk.read(1))
+                blue = self._parse_int_from_byte(chunk.read(1))
+                alpha = self._parse_int_from_byte(chunk.read(1))
+                self.image["sbit"] = (red, green, blue, alpha)
+        except Exception as e:
+            pass
         pass
 
     def _parse_SRGB(self, chunk, chunk_size):
