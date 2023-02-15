@@ -53,29 +53,29 @@ class PNGDecoder:
 
     def _parse_PLTE(self, chunk, chunk_size):
         print("Found PLTE chunk")  # Remove after defining all chunks
-        if self.image['idat'] is not None:
+        if self.image["idat"] is not None:
             raise PNGDecodeException("PLTE chunk must be before IDAT chunk")
-        
+
         if chunk_size % 3 != 0:
             raise PNGDecodeException("PLTE chunk size must be divisible by 3")
-        
+
         palette = []
 
         for i in range(chunk_size // 3):
-            red=self._parse_int_from_byte(chunk.read(1))
-            green=self._parse_int_from_byte(chunk.read(1))
-            blue=self._parse_int_from_byte(chunk.read(1))
+            red = self._parse_int_from_byte(chunk.read(1))
+            green = self._parse_int_from_byte(chunk.read(1))
+            blue = self._parse_int_from_byte(chunk.read(1))
             palette.append((red, green, blue))
 
-        self.image['palette'] = palette
+        self.image["palette"] = palette
 
     def _parse_IDAT(self, chunk, chunk_size):
         print("Found IDAT chunk")  # Remove after defining all chunks
-        if self.image['idata'] is None:
-            self.image['idat'] = []
-            self.image['idat'].append(chunk)
+        if self.image["idata"] is None:
+            self.image["idat"] = []
+            self.image["idat"].append(chunk)
         else:
-            self.image['idat'].append(chunk)
+            self.image["idat"].append(chunk)
 
     def _parse_IEND(self, chunk, chunk_size):
         print("Found IEND chunk")  # Remove after defining all chunks
@@ -126,30 +126,68 @@ class PNGDecoder:
 
     def _parse_ICCP(self, chunk, chunk_size):
         print("Found ICCP chunk")  # Remove after defining all chunks
+
+        if self.image["idat"] is not None or self.image["palette"] is not None:
+            raise PNGDecodeException("ICCP chunk must be before IDAT and PLTE chunks")
+
+        if self.image["srgb"] is not None:
+            raise PNGDecodeException(
+                "ICCP chunk must not be present if sRGB chunk is present"
+            )
         pass
 
     def _parse_SBIT(self, chunk, chunk_size):
         print("Found SBIT chunk")  # Remove after defining all chunks
+
+        if self.image["idat"] is not None or self.image["palette"] is not None:
+            raise PNGDecodeException("SBIT chunk must be before IDAT and PLTE chunks")
         pass
 
     def _parse_SRGB(self, chunk, chunk_size):
         print("Found SRGB chunk")  # Remove after defining all chunks
+
+        if self.image["idat"] is not None or self.image["palette"] is not None:
+            raise PNGDecodeException("SRCGB chunk must be before IDAT and PLTE chunks")
+
+        if self.image["iccp"] is not None:
+            raise PNGDecodeException(
+                "SRGB chunk must not be present if ICCP chunk is present"
+            )
         pass
 
     def _parse_BKGD(self, chunk, chunk_size):
         print("Found BKGD chunk")  # Remove after defining all chunks
+        if self.image["plte"] is None:
+            raise PNGDecodeException("BKGD chunk must be after PLTE chunk")
+
+        if self.image["idat"] is not None:
+            raise PNGDecodeException("BKGD chunk must be before IDAT chunk")
         pass
 
     def _parse_HIST(self, chunk, chunk_size):
         print("Found HIST chunk")  # Remove after defining all chunks
+
+        if self.image["plte"] is None:
+            raise PNGDecodeException("HIST chunk must be after PLTE chunk")
+
+        if self.image["idat"] is not None:
+            raise PNGDecodeException("HIST chunk must be before IDAT chunk")
         pass
 
     def _parse_TRNS(self, chunk, chunk_size):
         print("Found TRNS chunk")  # Remove after defining all chunks
+        if self.image["plte"] is None:
+            raise PNGDecodeException("TRNS chunk must be after PLTE chunk")
+
+        if self.image["idat"] is not None:
+            raise PNGDecodeException("TRNS chunk must be before IDAT chunk")
         pass
 
     def _parse_PHYS(self, chunk, chunk_size):
         print("Found PHYS chunk")  # Remove after defining all chunks
+
+        if self.image["idat"] is not None:
+            raise PNGDecodeException("PHYS chunk must be before IDAT chunk")
 
         try:
             x_pixels_per_unit = unpack(">I", chunk.read(4))[0]
@@ -171,6 +209,8 @@ class PNGDecoder:
 
     def _parse_SPLT(self, chunk, chunk_size):
         print("Found SPLT chunk")  # Remove after defining all chunks
+        if self.image["idat"] is not None:
+            raise PNGDecodeException("SPLT chunk must be before IDAT chunk")
         pass
 
     def _parse_TIME(self, chunk, chunk_size):
