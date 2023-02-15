@@ -134,6 +134,33 @@ class PNGDecoder:
             raise PNGDecodeException(
                 "ICCP chunk must not be present if sRGB chunk is present"
             )
+
+        try:
+            profile_name, null_is_seen, bytes_parsed = "", False, 0
+
+            while not null_is_seen and bytes_parsed < chunk_size:
+                char = self._parse_int_from_byte(chunk.read(1))
+                bytes_parsed += 1
+
+                if char == 0:
+                    null_is_seen = True
+                    break
+
+                profile_name += chr(char)
+
+            compression_method = self._parse_int_from_byte(chunk.read(1))
+            bytes_parsed += 1
+
+            profile_info = chunk.read(chunk_size - bytes_parsed)
+
+            profile_info = deflate(profile_info)
+
+            self.image["iccp"] = {
+                "profile_name": profile_name,
+                "profile_info": profile_info,
+            }
+        except Exception as e:
+            pass
         pass
 
     def _parse_SBIT(self, chunk, chunk_size):
