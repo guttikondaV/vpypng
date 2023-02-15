@@ -88,7 +88,7 @@ class PNGDecoder:
         print("Found CHRM chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None or self.image["palette"] is not None:
-            raise PNGDecodeException("CHRM chunk must be before IDAT and PLTE chunks")
+            return
 
         if chunk_size != 32:  # 8 bytes for each of the 4 points
             return
@@ -116,7 +116,7 @@ class PNGDecoder:
         print("Found GAMA chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None or self.image["palette"] is not None:
-            raise PNGDecodeException("GAMA chunk must be before IDAT and PLTE chunks")
+            return
 
         try:
             gamma = unpack(">I", chunk.read(4))[0]
@@ -128,7 +128,7 @@ class PNGDecoder:
         print("Found ICCP chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None or self.image["palette"] is not None:
-            raise PNGDecodeException("ICCP chunk must be before IDAT and PLTE chunks")
+            return
 
         if self.image["srgb"] is not None:
             raise PNGDecodeException(
@@ -167,7 +167,7 @@ class PNGDecoder:
         print("Found SBIT chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None or self.image["palette"] is not None:
-            raise PNGDecodeException("SBIT chunk must be before IDAT and PLTE chunks")
+            return
 
         try:
             if self.image["color_type"] == 0:
@@ -221,8 +221,44 @@ class PNGDecoder:
     def _parse_BKGD(self, chunk, chunk_size):
         print("Found BKGD chunk")  # Remove after defining all chunks
         if self.image["idat"] is not None:
-            raise PNGDecodeException("BKGD chunk must be before IDAT chunk")
-        pass
+            return
+
+        try:
+            if self.image["color_type"] in [0, 4]:
+                print(chunk_size)
+                if chunk_size != 2:
+                    return
+
+                greyscale = self._parse_int_from_byte(chunk.read(2))
+                if greyscale > 2 ** (self.image["bit_depth"]) - 1:
+                    return
+                self.image["bkgd"] = (greyscale,)
+            elif self.image["color_type"] in [2, 6]:
+                if chunk_size != 6:
+                    return
+
+                red = self._parse_int_from_byte(chunk.read(2))
+                green = self._parse_int_from_byte(chunk.read(2))
+                blue = self._parse_int_from_byte(chunk.read(2))
+                if (
+                    red > 2 ** (self.image["bit_depth"]) - 1
+                    or green > 2 ** (self.image["bit_depth"]) - 1
+                    or blue > 2 ** (self.image["bit_depth"]) - 1
+                ):
+                    return
+
+                self.image["bkgd"] = (red, green, blue)
+            elif self.image["color_type"] == 3:
+                print("Chunk size: ", chunk_size)
+                if chunk_size != 1:
+                    return
+                palette_index = self._parse_int_from_byte(chunk.read(1))
+                if palette_index > len(self.image["palette"]):
+                    return
+
+                self.image["bkgd"] = self.image["palette"][palette_index]
+        except Exception as e:
+            pass
 
     def _parse_HIST(self, chunk, chunk_size):
         print("Found HIST chunk")  # Remove after defining all chunks
