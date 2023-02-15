@@ -57,7 +57,11 @@ class PNGDecoder:
 
     def _parse_IDAT(self, chunk, chunk_size):
         print("Found IDAT chunk")  # Remove after defining all chunks
-        pass
+        if self.image['idata'] is None:
+            self.image['idat'] = []
+            self.image['idat'].append(chunk)
+        else:
+            self.image['idat'].append(chunk)
 
     def _parse_IEND(self, chunk, chunk_size):
         print("Found IEND chunk")  # Remove after defining all chunks
