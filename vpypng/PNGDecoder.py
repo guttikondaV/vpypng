@@ -193,19 +193,30 @@ class PNGDecoder:
                 self.image["sbit"] = (red, green, blue, alpha)
         except Exception as e:
             pass
-        pass
 
     def _parse_SRGB(self, chunk, chunk_size):
         print("Found SRGB chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None or self.image["palette"] is not None:
-            raise PNGDecodeException("SRCGB chunk must be before IDAT and PLTE chunks")
+            return
 
         if self.image["iccp"] is not None:
             raise PNGDecodeException(
                 "SRGB chunk must not be present if ICCP chunk is present"
             )
-        pass
+
+        try:
+            if chunk_size > 1:
+                return
+            if self.image["srgb"] is not None:
+                self.image["srgb"] = None
+                return
+            rendering_intent = self._parse_int_from_byte(chunk.read(1))
+            if rendering_intent not in [0, 1, 2, 3]:
+                return
+            self.image["srgb"] = rendering_intent
+        except Exception as e:
+            pass
 
     def _parse_BKGD(self, chunk, chunk_size):
         print("Found BKGD chunk")  # Remove after defining all chunks
