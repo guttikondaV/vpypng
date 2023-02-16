@@ -264,8 +264,22 @@ class PNGDecoder:
         print("Found HIST chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None:
-            raise PNGDecodeException("HIST chunk must be before IDAT chunk")
-        pass
+            return
+
+        if self.image['palette'] is None:
+            return
+
+        try:
+            histogram=[]
+            for i in range(0, chunk_size, 2):
+                histogram.append(self._parse_int_from_byte(chunk.read(2)))
+
+            if len(histogram) != len(self.image['palette']):
+                return
+            
+            self.image['histogram'] = histogram
+        except Exception as e:
+            pass
 
     def _parse_TRNS(self, chunk, chunk_size):
         print("Found TRNS chunk")  # Remove after defining all chunks
