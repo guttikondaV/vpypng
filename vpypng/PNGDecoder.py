@@ -266,18 +266,18 @@ class PNGDecoder:
         if self.image["idat"] is not None:
             return
 
-        if self.image['palette'] is None:
+        if self.image["palette"] is None:
             return
 
         try:
-            histogram=[]
+            histogram = []
             for i in range(0, chunk_size, 2):
                 histogram.append(self._parse_int_from_byte(chunk.read(2)))
 
-            if len(histogram) != len(self.image['palette']):
+            if len(histogram) != len(self.image["palette"]):
                 return
-            
-            self.image['histogram'] = histogram
+
+            self.image["histogram"] = histogram
         except Exception as e:
             pass
 
@@ -285,8 +285,43 @@ class PNGDecoder:
         print("Found TRNS chunk")  # Remove after defining all chunks
 
         if self.image["idat"] is not None:
-            raise PNGDecodeException("TRNS chunk must be before IDAT chunk")
-        pass
+            return
+
+        try:
+            color_type = self.image["color_type"]
+
+            if color_type in [4, 6]:
+                return
+
+            if color_type == 0:
+                if chunk_size != 2:
+                    return
+                
+                grey_sample = self._parse_int_from_byte(chunk.read(2))
+
+                if grey_sample > 2 ** (self.image["bit_depth"]) - 1:
+                    return
+
+                self.image["trns"] = (grey_sample,)
+                return
+            elif color_type == 2:
+                if chunk_size != 6:
+                    return
+                
+                red_sample = self._parse_int_from_byte(chunk.read(2))
+                blue_sample = self._parse_int_from_byte(chunk.read(2))
+                green_sample = self._parse_int_from_byte(chunk.read(2))
+                self.image["trns"] = (red_sample, blue_sample, green_sample)
+            elif color_type == 3:
+                if chunk_size != len(self.image["palette"]):
+                    return
+                
+                palette_indexes = []
+                for i in range(0, chunk_size):
+                    palette_indexes.append(self._parse_int_from_byte(chunk.read(1)))
+                self.image["trns"] = palette_indexes
+        except Exception as e:
+            pass
 
     def _parse_PHYS(self, chunk, chunk_size):
         print("Found PHYS chunk")  # Remove after defining all chunks

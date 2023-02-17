@@ -706,13 +706,13 @@ class TestPngDecoder:
         for good_image_path in GOOD_IMAGES_PATHS:
             decoded_image = PNGCodec.decode(good_image_path)
 
-            if decoded_image['color_type'] in [0, 4]:
+            if decoded_image["color_type"] in [0, 4]:
                 assert decoded_image["bkgd"] is not None
                 assert len(decoded_image["bkgd"]) == 1
-            elif decoded_image['color_type'] in [2, 6]:
+            elif decoded_image["color_type"] in [2, 6]:
                 assert decoded_image["bkgd"] is not None
                 assert len(decoded_image["bkgd"]) == 3
-            elif decoded_image['color_type'] in [3]:
+            elif decoded_image["color_type"] in [3]:
                 assert decoded_image["bkgd"] is not None
 
     def test_decoder_bkgd_ok_input_path(self):
@@ -720,13 +720,13 @@ class TestPngDecoder:
         for good_image_path in GOOD_IMAGES_PATHS:
             decoded_image = PNGCodec.decode(Path(good_image_path))
 
-            if decoded_image['color_type'] in [0, 4]:
+            if decoded_image["color_type"] in [0, 4]:
                 assert decoded_image["bkgd"] is not None
                 assert len(decoded_image["bkgd"]) == 1
-            elif decoded_image['color_type'] in [2, 6]:
+            elif decoded_image["color_type"] in [2, 6]:
                 assert decoded_image["bkgd"] is not None
                 assert len(decoded_image["bkgd"]) == 3
-            elif decoded_image['color_type'] in [3]:
+            elif decoded_image["color_type"] in [3]:
                 assert decoded_image["bkgd"] is not None
 
     def test_decoder_bkgd_ok_input_file(self):
@@ -735,13 +735,13 @@ class TestPngDecoder:
             with open(good_image_path, "rb") as pngfile:
                 decoded_image = PNGCodec.decode(pngfile)
 
-                if decoded_image['color_type'] in [0, 4]:
+                if decoded_image["color_type"] in [0, 4]:
                     assert decoded_image["bkgd"] is not None
                     assert len(decoded_image["bkgd"]) == 1
-                elif decoded_image['color_type'] in [2, 6]:
+                elif decoded_image["color_type"] in [2, 6]:
                     assert decoded_image["bkgd"] is not None
                     assert len(decoded_image["bkgd"]) == 3
-                elif decoded_image['color_type'] in [3]:
+                elif decoded_image["color_type"] in [3]:
                     assert decoded_image["bkgd"] is not None
 
     def test_decoder_bkgd_ok_input_bytes(self):
@@ -750,13 +750,13 @@ class TestPngDecoder:
             with open(good_image_path, "rb") as pngfile:
                 decoded_image = PNGCodec.decode(pngfile.read())
 
-                if decoded_image['color_type'] in [0, 4]:
+                if decoded_image["color_type"] in [0, 4]:
                     assert decoded_image["bkgd"] is not None
                     assert len(decoded_image["bkgd"]) == 1
-                elif decoded_image['color_type'] in [2, 6]:
+                elif decoded_image["color_type"] in [2, 6]:
                     assert decoded_image["bkgd"] is not None
                     assert len(decoded_image["bkgd"]) == 3
-                elif decoded_image['color_type'] in [3]:
+                elif decoded_image["color_type"] in [3]:
                     assert decoded_image["bkgd"] is not None
 
     def test_decoder_bkgd_bad_input_str(self):
@@ -794,16 +794,16 @@ class TestPngDecoder:
         for good_image_path in GOOD_IMAGES_PATHS:
             decoded_image = PNGCodec.decode(good_image_path)
 
-            assert decoded_image['histogram'] is not None
-            assert len(decoded_image['histogram']) == len(decoded_image['palette'])
+            assert decoded_image["histogram"] is not None
+            assert len(decoded_image["histogram"]) == len(decoded_image["palette"])
 
     def test_decoder_hist_ok_input_path(self):
         GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_hist*.png")
         for good_image_path in GOOD_IMAGES_PATHS:
             decoded_image = PNGCodec.decode(Path(good_image_path))
 
-            assert decoded_image['histogram'] is not None
-            assert len(decoded_image['histogram']) == len(decoded_image['palette'])
+            assert decoded_image["histogram"] is not None
+            assert len(decoded_image["histogram"]) == len(decoded_image["palette"])
 
     def test_decoder_hist_ok_input_file(self):
         GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_hist*.png")
@@ -811,8 +811,8 @@ class TestPngDecoder:
             with open(good_image_path, "rb") as pngfile:
                 decoded_image = PNGCodec.decode(pngfile)
 
-                assert decoded_image['histogram'] is not None
-                assert len(decoded_image['histogram']) == len(decoded_image['palette'])
+                assert decoded_image["histogram"] is not None
+                assert len(decoded_image["histogram"]) == len(decoded_image["palette"])
 
     def test_decoder_hist_ok_input_bytes(self):
         GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_hist*.png")
@@ -820,22 +820,22 @@ class TestPngDecoder:
             with open(good_image_path, "rb") as pngfile:
                 decoded_image = PNGCodec.decode(pngfile.read())
 
-                assert decoded_image['histogram'] is not None
-                assert len(decoded_image['histogram']) == len(decoded_image['palette'])
+                assert decoded_image["histogram"] is not None
+                assert len(decoded_image["histogram"]) == len(decoded_image["palette"])
 
     def test_decoder_hist_bad_input_str(self):
         BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_hist*.png")
         for bad_image_path in BAD_IMAGES_PATHS:
             decoded_image = PNGCodec.decode(bad_image_path)
 
-            assert decoded_image['histogram'] is None
+            assert decoded_image["histogram"] is None
 
     def test_decoder_hist_bad_input_path(self):
         BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_hist*.png")
         for bad_image_path in BAD_IMAGES_PATHS:
             decoded_image = PNGCodec.decode(Path(bad_image_path))
 
-            assert decoded_image['histogram'] is None
+            assert decoded_image["histogram"] is None
 
     def test_decoder_hist_bad_input_file(self):
         BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_hist*.png")
@@ -843,7 +843,7 @@ class TestPngDecoder:
             with open(bad_image_path, "rb") as pngfile:
                 decoded_image = PNGCodec.decode(pngfile)
 
-                assert decoded_image['histogram'] is None
+                assert decoded_image["histogram"] is None
 
     def test_decoder_hist_bad_input_bytes(self):
         BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_hist*.png")
@@ -851,4 +851,96 @@ class TestPngDecoder:
             with open(bad_image_path, "rb") as pngfile:
                 decoded_image = PNGCodec.decode(pngfile.read())
 
-                assert decoded_image['histogram'] is None
+                assert decoded_image["histogram"] is None
+
+    def test_decoder_trns_ok_input_str(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_trns*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(good_image_path)
+
+            if decoded_image["color_type"] == 0:
+                assert decoded_image["trns"] is not None
+                assert len(decoded_image["trns"]) == 1
+            elif decoded_image["color_type"] == 2:
+                assert decoded_image["trns"] is not None
+                assert len(decoded_image["trns"]) == 3
+            elif decoded_image["color_type"] == 3:
+                assert decoded_image["trns"] is not None
+                assert len(decoded_image["trns"]) == len(decoded_image["palette"])
+
+    def test_decoder_trns_ok_input_path(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_trns*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(Path(good_image_path))
+
+            if decoded_image["color_type"] == 0:
+                assert decoded_image["trns"] is not None
+                assert len(decoded_image["trns"]) == 1
+            elif decoded_image["color_type"] == 2:
+                assert decoded_image["trns"] is not None
+                assert len(decoded_image["trns"]) == 3
+            elif decoded_image["color_type"] == 3:
+                assert decoded_image["trns"] is not None
+                assert len(decoded_image["trns"]) == len(decoded_image["palette"])
+
+    def test_decoder_trns_ok_input_file(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_trns*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            with open(good_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile)
+
+                if decoded_image["color_type"] == 0:
+                    assert decoded_image["trns"] is not None
+                    assert len(decoded_image["trns"]) == 1
+                elif decoded_image["color_type"] == 2:
+                    assert decoded_image["trns"] is not None
+                    assert len(decoded_image["trns"]) == 3
+                elif decoded_image["color_type"] == 3:
+                    assert decoded_image["trns"] is not None
+                    assert len(decoded_image["trns"]) == len(decoded_image["palette"])
+
+    def test_decoder_trns_ok_input_bytes(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_trns*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            with open(good_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile.read())
+
+                if decoded_image["color_type"] == 0:
+                    assert decoded_image["trns"] is not None
+                    assert len(decoded_image["trns"]) == 1
+                elif decoded_image["color_type"] == 2:
+                    assert decoded_image["trns"] is not None
+                    assert len(decoded_image["trns"]) == 3
+                elif decoded_image["color_type"] == 3:
+                    assert decoded_image["trns"] is not None
+                    assert len(decoded_image["trns"]) == len(decoded_image["palette"])
+
+    def test_decoder_trns_bad_input_str(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_trns*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(bad_image_path)
+
+            assert decoded_image["trns"] is None
+
+    def test_decoder_trns_bad_input_path(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_trns*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(Path(bad_image_path))
+
+            assert decoded_image["trns"] is None
+
+    def test_decoder_trns_bad_input_file(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_trns*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            with open(bad_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile)
+
+                assert decoded_image["trns"] is None
+
+    def test_decoder_trns_bad_input_bytes(self):
+        BAD_IMAGES_PATHS = glob.glob("./tests/testimages/bad_trns*.png")
+        for bad_image_path in BAD_IMAGES_PATHS:
+            with open(bad_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile.read())
+
+                assert decoded_image["trns"] is None
