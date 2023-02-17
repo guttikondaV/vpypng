@@ -944,3 +944,37 @@ class TestPngDecoder:
                 decoded_image = PNGCodec.decode(pngfile.read())
 
                 assert decoded_image["trns"] is None
+
+    def test_decoder_splt_ok_input_str(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_splt*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(good_image_path)
+
+            assert decoded_image["splt"] is not None
+            assert all([len(splt_item) == 3 for splt_item in decoded_image["splt"]])
+
+    def test_decoder_splt_ok_input_path(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_splt*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            decoded_image = PNGCodec.decode(Path(good_image_path))
+
+            assert decoded_image["splt"] is not None
+            assert all([len(splt_item) == 3 for splt_item in decoded_image["splt"]])
+
+    def test_decoder_splt_ok_input_file(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_splt*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            with open(good_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile)
+
+                assert decoded_image["splt"] is not None
+                assert all([len(splt_item) == 3 for splt_item in decoded_image["splt"]])
+
+    def test_decoder_splt_ok_input_bytes(self):
+        GOOD_IMAGES_PATHS = glob.glob("./tests/testimages/good_splt*.png")
+        for good_image_path in GOOD_IMAGES_PATHS:
+            with open(good_image_path, "rb") as pngfile:
+                decoded_image = PNGCodec.decode(pngfile.read())
+
+                assert decoded_image["splt"] is not None
+                assert all([len(splt_item) == 3 for splt_item in decoded_image["splt"]])

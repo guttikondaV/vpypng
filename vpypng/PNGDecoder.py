@@ -1,3 +1,4 @@
+import string
 from datetime import datetime, timezone
 from io import BufferedIOBase, BytesIO
 from struct import unpack
@@ -296,7 +297,7 @@ class PNGDecoder:
             if color_type == 0:
                 if chunk_size != 2:
                     return
-                
+
                 grey_sample = self._parse_int_from_byte(chunk.read(2))
 
                 if grey_sample > 2 ** (self.image["bit_depth"]) - 1:
@@ -307,7 +308,7 @@ class PNGDecoder:
             elif color_type == 2:
                 if chunk_size != 6:
                     return
-                
+
                 red_sample = self._parse_int_from_byte(chunk.read(2))
                 blue_sample = self._parse_int_from_byte(chunk.read(2))
                 green_sample = self._parse_int_from_byte(chunk.read(2))
@@ -315,7 +316,7 @@ class PNGDecoder:
             elif color_type == 3:
                 if chunk_size != len(self.image["palette"]):
                     return
-                
+
                 palette_indexes = []
                 for i in range(0, chunk_size):
                     palette_indexes.append(self._parse_int_from_byte(chunk.read(1)))
@@ -350,8 +351,68 @@ class PNGDecoder:
     def _parse_SPLT(self, chunk, chunk_size):
         print("Found SPLT chunk")  # Remove after defining all chunks
         if self.image["idat"] is not None:
-            raise PNGDecodeException("SPLT chunk must be before IDAT chunk")
-        pass
+            return
+
+        try:
+            palette_name, bytes_parsed, null_is_seen = "", 0, False
+
+            while not null_is_seen and bytes_parsed < chunk_size:
+                byte = self._parse_int_from_byte(chunk.read(1))
+                bytes_parsed += 1
+                if byte == 0:
+                    null_is_seen = True
+                else:
+                    palette_name += chr(byte)
+
+            if " " in palette_name:
+                return
+
+            sample_depth = self._parse_int_from_byte(chunk.read(1))
+            bytes_parsed += 1
+
+            if sample_depth not in [8, 16]:
+                return
+
+            plte_entries = []
+
+            if sample_depth == 8:
+                for _ in range(0, chunk_size - bytes_parsed, 6):
+                    red = self._parse_int_from_byte(chunk.read(1))
+                    green = self._parse_int_from_byte(chunk.read(1))
+                    blue = self._parse_int_from_byte(chunk.read(1))
+                    alpha = self._parse_int_from_byte(chunk.read(1))
+                    frequency = self._parse_int_from_byte(chunk.read(2))
+                    plte_entries.append((red, green, blue, alpha, frequency))
+
+            elif sample_depth == 16:
+                for _ in range(0, chunk_size - bytes_parsed, 10):
+                    red = self._parse_int_from_byte(chunk.read(2))
+                    green = self._parse_int_from_byte(chunk.read(2))
+                    blue = self._parse_int_from_byte(chunk.read(2))
+                    alpha = self._parse_int_from_byte(chunk.read(2))
+                    frequency = self._parse_int_from_byte(chunk.read(2))
+                    plte_entries.append((red, green, blue, alpha, frequency))
+
+            if sample_depth == 8:
+                print(sample_depth, (chunk_size - bytes_parsed), chunk_size)
+
+            if sample_depth == 16:
+                print(sample_depth, (chunk_size - bytes_parsed), chunk_size)
+
+            if self.image["splt"] is None:
+                self.image["splt"] = []
+                self.image["splt"].append((palette_name, sample_depth, plte_entries))
+            else:
+                names = list(map(lambda x: x[0], self.image["splt"]))
+
+                if palette_name in names:
+                    self.image["splt"] = None
+                    return
+
+                self.image["splt"].append((palette_name, sample_depth, plte_entries))
+
+        except Exception as e:
+            print(e)
 
     def _parse_TIME(self, chunk, chunk_size):
         print("Found TIME chunk")  # Remove after defining all chunks
